@@ -3,10 +3,6 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import WelcomeFrame from './components/WelcomeFrame';
 import CourseMarketplace from './components/CourseMarketplace';
-import LessonViewer from './components/LessonViewer';
-import SocialFeed from './components/SocialFeed';
-import UserProfile from './components/UserProfile';
-import HelpCenter from './components/HelpCenter';
 import TokenBalance from './components/TokenBalance';
 import Navigation from './components/Navigation';
 import { useUserStore } from './store/userStore';
@@ -17,7 +13,6 @@ function App() {
   const { address, isConnected } = useAccount();
   const [currentView, setCurrentView] = useState('welcome');
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [selectedLesson, setSelectedLesson] = useState(null);
   
   const { user, initializeUser, updateBalance } = useUserStore();
   const { initializeCourses } = useCourseStore();
@@ -43,16 +38,8 @@ function App() {
     setCurrentView('course-detail');
   };
 
-  const handleLessonSelect = (lesson) => {
-    setSelectedLesson(lesson);
-    setCurrentView('lesson');
-  };
-
   const handleNavigation = (view) => {
     setCurrentView(view);
-    if (view !== 'lesson') {
-      setSelectedLesson(null);
-    }
     if (view !== 'course-detail') {
       setSelectedCourse(null);
     }
@@ -67,23 +54,8 @@ function App() {
           <CourseMarketplace 
             onCourseSelect={handleCourseSelect}
             selectedCourse={selectedCourse}
-            onLessonSelect={handleLessonSelect}
           />
         );
-      case 'lesson':
-        return (
-          <LessonViewer 
-            lesson={selectedLesson}
-            course={selectedCourse}
-            onComplete={() => handleNavigation('marketplace')}
-          />
-        );
-      case 'feed':
-        return <SocialFeed />;
-      case 'help':
-        return <HelpCenter />;
-      case 'profile':
-        return <UserProfile />;
       default:
         return <WelcomeFrame onStartLearning={handleStartLearning} />;
     }
